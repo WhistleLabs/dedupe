@@ -1,26 +1,37 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+try:
+    from Cython.Build import cythonize
+except ImportError:
+    raise ImportError("Cython seems to be required for clean install.")
 
 try:
     from setuptools import setup, Extension
-except ImportError :
+except ImportError:
     raise ImportError("setuptools module required, please go to https://pypi.python.org/pypi/setuptools and follow the instructions for installing setuptools")
 
-install_requires=['fastcluster',
-                  'dedupe-hcluster',
-                  'affinegap>=1.3',
-                  'categorical-distance>=1.9',
-                  'future',
-                  'rlr>=2.3',
-                  'doublemetaphone',
-                  'highered>=0.2.0',
-                  'canonicalize',
-                  'simplecosine>=1.1',
-                  'haversine>=0.4.1',
-                  'BTrees>=4.1.4',
-                  'simplejson',
-                  'zope.index',
-                  'Levenshtein_search']
+install_requires = ['fastcluster',
+                    'dedupe-hcluster',
+                    'affinegap>=1.3',
+                    'categorical-distance>=1.9',
+                    'future',
+                    'rlr>=2.3',
+                    'doublemetaphone',
+                    'highered>=0.2.0',
+                    'canonicalize',
+                    'simplecosine>=1.1',
+                    'haversine>=0.4.1',
+                    'BTrees>=4.1.4',
+                    'simplejson',
+                    'zope.index',
+                    'Levenshtein_search']
+
+extensions = [
+    Extension(
+        'dedupe.cpredicates',
+        ['src/cpredicates.pyx'],
+    ),
+]
 
 setup(
     name='dedupe',
@@ -30,7 +41,8 @@ setup(
     author_email='fgregg@datamade.us',
     description='A python library for accurate and scaleable data deduplication and entity-resolution',
     packages=['dedupe', 'dedupe.variables'],
-    ext_modules=[Extension('dedupe.cpredicates', ['src/cpredicates.c'])],
+    include_package_data=True,
+    ext_modules=cythonize(extensions),
     install_requires=install_requires,
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -41,7 +53,7 @@ setup(
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: POSIX',
-        'Programming Language :: Cython', 
+        'Programming Language :: Cython',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.4',
         'Topic :: Software Development :: Libraries :: Python Modules',
@@ -67,4 +79,4 @@ setup(
     * IRC channel, `#dedupe on irc.freenode.net <http://webchat.freenode.net/?channels=dedupe>`_
     * Examples: https://github.com/datamade/dedupe-examples
     """
-    )
+)
